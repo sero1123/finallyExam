@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+</head>
+<body>
+    <table border="1", id="myTable">
+        <tr>
+            <th>ID</th>
+            <th>PRODUCT_ID</th>
+            <th>PRODUCT_NAME</th>
+            <th>PRODUCT_PRICE</th>
+            <th>PRODUCT_ARTICLE</th>
+            <th>PRODUCT_QUANTITY</th>
+            <th>DATE_CREATE</th>
+            <th>Скрыть</th>
+        </tr>
+    </table>
+
+<script>
+    $(document).ready(function () {
+        function getStrTable(){
+            $.ajax({
+                type:"POST",
+                url:"getProductsStr.php",
+                dataType : "HTML",
+                success: function(data){
+                    $("#myTable").append(data);
+                    $(".strTable").append("<td><button class='hiden' type='button' onClick = 'getIdParent(this)'>скрыть</button></td>")
+                    $(".PRODUCT_QUANTITY").append("<button class='plus' type='button' onClick = 'qualityPlus(this)'>+</button>")
+                    $(".PRODUCT_QUANTITY").append("<button class='minus' type='button' onClick = 'qualityMinus(this)'>-</button>")
+                },
+                error: function (error){
+                    console.log("Ошибка");
+                }
+            })
+        }
+        getStrTable();
+    })
+
+    function getIdParent (obj){
+        var id = obj.parentNode.parentNode.id;
+        var elem = obj.parentNode.parentNode;
+        function hide(){
+            $.ajax({
+            type:"POST",
+            url:"hide.php",
+            data:{ ID : id},
+            success: function(data){
+                    console.log(data);
+                },
+                error: function (error){
+                    console.log("Ошибка");
+                }
+        })
+        }
+        hide();
+        $(elem).remove();
+    }
+
+    function qualityPlus (obj){
+        var id = obj.parentNode.parentNode.id;
+        var parent = obj.parentNode;
+        var qualitiElem = parent.firstElementChild;
+        var qualiti = parent.firstElementChild.textContent;
+        qualitiElem.textContent = (parseInt(qualiti)+1);
+        console.log(qualiti);
+        $.ajax({
+            type:"POST",
+            url:"qualityChanges.php",
+            data:{ ID : id,
+                QUALITY:1},
+            success: function(data){
+                    console.log(data);
+                },
+                error: function (error){
+                    console.log("Ошибка");
+                }
+        })
+
+    }
+
+    function qualityMinus (obj){
+        var id = obj.parentNode.parentNode.id;
+        var parent = obj.parentNode;
+        var qualitiElem = parent.firstElementChild;
+        var qualiti = parent.firstElementChild.textContent;
+        qualitiElem.textContent = (parseInt(qualiti)-1);
+
+        $.ajax({
+            type:"POST",
+            url:"qualityChanges.php",
+            data:{ ID : id,
+                QUALITY:-1},
+            success: function(data){
+                    console.log(data);
+                },
+                error: function (error){
+                    console.log("Ошибка");
+                }
+        })
+    }
+</script>
+</body>
+</html>
